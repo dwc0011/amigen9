@@ -158,38 +158,38 @@ function WaagentSetup {
 #     err_exit "Failed disabling static udev network-naming rules" 1
 #   err_exit "Success!" NONE
 
-#   #  6. Configure waagent for cloud-init
-#   #  For details on waagent config options, see: https://github.com/Azure/WALinuxAgent#configuration-file-options
-#   err_exit "Writing config-date to /etc/waagent.conf... " NONE
-#   chroot "${CHROOTMNT}" sed -i \
-#     -e 's/Provisioning.Agent=auto/Provisioning.Agent=auto/g' \
-#     -e 's/ResourceDisk.Format=y/ResourceDisk.Format=n/g' \
-#     -e 's/ResourceDisk.EnableSwap=y/ResourceDisk.EnableSwap=n/g' \
-#     /etc/waagent.conf || \
-#     err_exit "Failed writing config-date to /etc/waagent.conf" 1
-#   err_exit "Success!" NONE
+  #  6. Configure waagent for cloud-init
+  #  For details on waagent config options, see: https://github.com/Azure/WALinuxAgent#configuration-file-options
+  err_exit "Writing config-date to /etc/waagent.conf... " NONE
+  chroot "${CHROOTMNT}" sed -i \
+    -e 's/Provisioning.Agent=auto/Provisioning.Agent=auto/g' \
+    -e 's/ResourceDisk.Format=y/ResourceDisk.Format=n/g' \
+    -e 's/ResourceDisk.EnableSwap=y/ResourceDisk.EnableSwap=n/g' \
+    /etc/waagent.conf || \
+    err_exit "Failed writing config-date to /etc/waagent.conf" 1
+  err_exit "Success!" NONE
 
-#   #  7. Allow only Azure datasource, disable fetching network setting via IMDS"
-#   err_exit "Configure Azure datasource... " NONE
-#   install -bDm 0644 -o root -g root <(
-#     echo "datasource_list: [ Azure ]"
-#     echo "datasource:"
-#     echo "  Azure:"
-#     echo "    apply_network_config: False"
-#   ) "${CHROOTMNT}/etc/cloud/cloud.cfg.d/91-azure_datasource.cfg" || \
-#     err_exit "Failed configuring Azure datasource" 1
-#   err_exit "Success!" NONE
+  #  7. Allow only Azure datasource, disable fetching network setting via IMDS"
+  err_exit "Configure Azure datasource... " NONE
+  install -bDm 0644 -o root -g root <(
+    echo "datasource_list: [ Azure ]"
+    echo "datasource:"
+    echo "  Azure:"
+    echo "    apply_network_config: False"
+  ) "${CHROOTMNT}/etc/cloud/cloud.cfg.d/91-azure_datasource.cfg" || \
+    err_exit "Failed configuring Azure datasource" 1
+  err_exit "Success!" NONE
 
-#   #  8. Add console log file
-#   err_exit "Configuring console-logging for cloud-init... " NONE
-#   install -bDm 0644 -o root -g root <(
-#     echo "# This tells cloud-init to redirect its stdout and stderr to"
-#     echo "# 'tee -a /var/log/cloud-init-output.log' so the user can see output"
-#     echo "# there without needing to look on the console."
-#     echo "output: {all: '| tee -a /var/log/cloud-init-output.log'}"
-#   ) "${CHROOTMNT}/etc/cloud/cloud.cfg.d/05_logging.cfg" || \
-#     err_exit "Failed configuring console-logging for cloud-init" 1
-#   err_exit "Success!" NONE
+  #  8. Add console log file
+  err_exit "Configuring console-logging for cloud-init... " NONE
+  install -bDm 0644 -o root -g root <(
+    echo "# This tells cloud-init to redirect its stdout and stderr to"
+    echo "# 'tee -a /var/log/cloud-init-output.log' so the user can see output"
+    echo "# there without needing to look on the console."
+    echo "output: {all: '| tee -a /var/log/cloud-init-output.log'}"
+  ) "${CHROOTMNT}/etc/cloud/cloud.cfg.d/05_logging.cfg" || \
+    err_exit "Failed configuring console-logging for cloud-init" 1
+  err_exit "Success!" NONE
 
   # 9. Enable the services
   err_exit "Enabling the waagent.service systemd unit" NONE
